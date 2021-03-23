@@ -1,0 +1,60 @@
+Dataset in use student_por
+
+Dataset source: https://www.kaggle.com/larsen0966/student-performance-data-set
+
+Aim :
+To find out which variable (father's education level , mother's education level and their study time) is more singnificant to their final grade (compare their coefficient)
+adnd give suggestion to improve students' final grade . 
+
+Method in use : Regression with multiple independent variables
+Software in use: Stata16
+
+Dependent Variable:
+                      g3 -----> final grade of the students (from 0 to 20)
+                   
+Independent Variables:
+                      medu -----> education level of a student's mother (from 0 to 4)
+                        0 - none
+                        1 - primary education (4th grade)
+                        2 - 5th to 9th grade 
+                        3 - secondary education 
+                        4 - higher education
+                        
+                      fedu -----> education level of a student's father (from 0 to 4)
+                        0 - none
+                        1 - primary education (4th grade)
+                        2 - 5th to 9th grade 
+                        3 - secondary education 
+                        4 - higher education
+                        
+                        studytime ------> weekly study time
+                        1 - 0 to 2 hours
+                        2 - 2 to 5 hours 
+                        3 - 5 to 10 hours
+                        4 - 10 hours or more
+
+
+Code to run the analysis (in STATA16)
+
+cd /home/user/downloads
+insheet using student-por.csv
+reg g3 studytime fedu medu
+
+
+Result (in 3 sig.fig):
+
+ g3= 0.896 studytime + 0.299 fedu + 0.433 medu + 8.40 
+ 
+
+From the result , we can see that studytime is the most economical significant variable among all variables with the coefficient of 0.896 which means that if the student 
+have study time increases by 1 level , it will increase their final grade by 0.896 , nearly 1 grade . While the eduacation level of the mother and father may seem less significant 
+when compare to the students' study time. If one's father have a higher level of education (e.g. from grade 4 increase to grade 9) , then it will increase the student'
+grade by 0.299. Under the same circumstance , the education level of the mother can lead to a rise of the grade by 0.433 . 
+
+
+Recommendation:
+
+In order to increase the students' grade , one of the ways is to increase their number of study hours namely by lowering their workload like minimizing the number of 
+assignment that they have when compared to the past situation. Another approach is to offer them time management workshop. In such kind of workshop , 
+students can learn how to manage their time well so they can spare more time on their studies as well as entertainment to attain a work hard play har balance.
+
