@@ -1,0 +1,138 @@
+House Price Analysis
+
+Dataset in use : train.csv (the dataset of Housing Prices Competition for Kaggle Learn Users)
+
+Author of the Dataset : unknown
+
+Link to the dataset : https://www.kaggle.com/c/home-data-for-ml-course/data?select=train.csv
+
+Background of the analysis : 
+
+Objectives : 
+            1. To find out which variable(s) affect the house price the most
+            2. To suggest way to improve the house (e.g. Structure , size , etc.)
+            
+Special Acknowledgement: 
+            1. This anaylsis is built on the former house price analysis where the data are the same
+            2. I would take log on the house price and overallsize ONLY
+            3. Outliers will be removed.
+
+
+
+Dependent Variable:
+
+                    log_saleprice -> sale price of the house after taking log
+$ gen log_saleprice = log(saleprice)
+
+$summarize log_saleprice
+
+ 
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+log_salepr~e |      1,460    12.02405    .3994519   10.46024   13.53447
+
+
+
+                       
+Independent Variables : 
+                        1. Overall Quality  (from 1 to 10, lowest to highest)
+                           a.  Rates the overall  material and finish of the house
+              
+
+$ summarize overallqual
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+ overallqual |      1,460    6.099315    1.382997          1         10
+
+
+                      2 . OverallCond  (from 1 to 10, lowest to highest)
+                          a. Rates the overall condition of the house
+$ summarize overallcond
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+ overallcond |      1,460    5.575342    1.112799          1          9
+
+
+                     3. Overallsize (1st floor +2nd floor)
+                            a. Overall size of the house
+                            
+$ gen overallsize = (stflrsf + ndflrsf)
+$ summarize stflrst
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+     stflrsf |      1,460    1162.627    386.5877        334       4692
+
+$ summarize ndflrsf
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+     ndflrsf |      1,460    346.9925    436.5284          0       2065
+
+
+$ summarize overallsize
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+ overallsize |      1,460    1509.619    521.1635        334       5642
+ 
+ 
+ log_overallsize  -> size of the house after taking log
+ 
+ $ gen log_overallsize = log(overallsize)
+ 
+ $ summarize log_overallsize
+ 
+ 
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+log_overal~e |      1,460    7.263989    .3338619   5.811141   8.637994
+
+
+ We will first find the correlation bewteen the dependent and the independent variables
+ 
+ $ corr log_saleprice overallqual overallcond log_overallsize
+ 
+ 
+  corr log_saleprice overallqual overallcond log_overallsize
+(obs=1,460)
+
+             | log_sa~e overal~l overal~d log_ov~e
+-------------+------------------------------------
+log_salepr~e |   1.0000
+ overallqual |   0.8172   1.0000
+ overallcond |  -0.0369  -0.0919   1.0000
+log_overal~e |   0.7371   0.6191  -0.1038   1.0000
+
+ 
+From the table above, it is suggested that overallquality and the log_overallsize has a high degress positive relationship between the dependent and the independent variables while the correlation
+bewteen overallcond and log_saleprice is very low which shows a neglectable correlation
+
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
