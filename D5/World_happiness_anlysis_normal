@@ -1,0 +1,128 @@
+World_Happiness_Anlysis_normal
+
+Dataset in use : world-happiness-report-2021.csv
+
+Author of the Dataset : Sustainable Development Solutions Network, powered by data from the Gallup World Poll and Lloyd’s Register Foundation, who provided access to the World Risk Poll. The 2021 Report includes data from the ICL-YouGov Behaviour Tracker as part of the COVID Data Hub from the Institute of Global Health Innovation.
+
+Extracted from Kaggle
+
+Link to the dataset : https://www.kaggle.com/ajaypalsinghlo/world-happiness-report-2021?select=world-happiness-report.csv
+
+Background of the analysis : 
+
+
+Objectives : 
+            1. To find out which variable(s) affect the happiness score the most
+            2. To suggest way to attain happiness (LOL)
+            
+Special Acknowledgement: 
+            1. Outliers will be removed if outlier(s) is(are) spotted.
+            
+Dependent Variable:
+
+                  ladderscore  --> score in terms of happiness
+                  
+$ summ ladderscore
+
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+ ladderscore |        149    5.532839    1.073924      2.523      7.842
+
+
+
+Independent Variables:
+
+                    1. loggedgdppercapita --> The logged GDP per capita
+                  
+$ summ loggedgdppercapita
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+loggedgdpp~a |        149    9.432208    1.158601      6.635     11.647
+
+
+            
+                    2. socialsupport --> social support
+                    
+$ summ socialsupport
+
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+socialsupp~t |        149     .814745     .114889       .463       .983
+
+
+
+                    3. healthylifeexpectancy --> healthy life expectancy
+                    
+$ summ healthylifeexpectancy
+
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+healthylif~y |        149     64.9928    6.762043     48.478     76.953
+
+
+                    4. freedomtomakelifechoices --> freedom to make life choices
+                    
+$ summ freedomtomakelifechoices
+
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+freedomtom~s |        149    .7915973    .1133318       .382        .97
+
+
+
+                    5. generosity
+                    
+$summ generosity
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+  generosity |        149   -.0151342    .1506567      -.288       .542
+
+
+
+                    6. perceptionsofcorruption --> perceptions of corruption
+                    
+                    
+$ summ perceptionsofcorruption
+
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+perception~n |        149    .7274497    .1792263       .082       .939
+
+            
+We will first find the correlation bewteen the dependent variable and the independent variables
+
+$ corr ladderscore loggedgdppercapita socialsupport healthylifeexpectancy freedomtomakelifechoices generosity perceptionsofcorruption
+
+             | ladder~e logged~a social~t health~y freedo~s genero~y percep~n
+-------------+---------------------------------------------------------------
+ ladderscore |   1.0000
+loggedgdpp~a |   0.7898   1.0000
+socialsupp~t |   0.7569   0.7853   1.0000
+healthylif~y |   0.7681   0.8595   0.7233   1.0000
+freedomtom~s |   0.6078   0.4323   0.4829   0.4615   1.0000
+  generosity |  -0.0178  -0.1993  -0.1149  -0.1618   0.1694   1.0000
+perception~n |  -0.4211  -0.3423  -0.2032  -0.3644  -0.4014  -0.1640   1.0000
+
+
+
+
+
+
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
