@@ -171,11 +171,15 @@ t statistics in parentheses
 ladderscore loggedgdppercapita socialsupport healthylifeexpectancy freedomtomakelifechoices generosity perceptionsofcorruption
 OLS 
 
-From the table above, it is discovered that freedomtomakelifechoices and socialsupport are economically significant and they are statistically significant even in the 1% significance
+From the table above, it is discovered that freedomtomakelifechoices and socialsupport are economically significant and they are statistically significant even in the 0.1% significance
 level . loggedgdppercapita is significant up to 1% while healthylifeexpectancy and perceptionsofcorruption can only be significant up to 5% significance level. It is notable that 
 generosity is insignificant no matter which significance level it is.
 
-            
+Robust OLS
+
+From the table above, it is discovered that freedomtomakelifechoices is the only variable that is statistically significant up to 0.1% significance level. It is also notable that freedomtomakelifechoices
+and socialsupport are economically significant. loggedgdppercapita and socialsupport are significant up to 1% while healthylifeexpectancy and perceptionsofcorruption can only be significant up to 5% significance level. It is notable that 
+generosity is insignificant no matter which significance level it is.
             
             
             
