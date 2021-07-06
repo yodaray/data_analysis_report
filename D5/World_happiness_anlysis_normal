@@ -110,10 +110,70 @@ freedomtom~s |   0.6078   0.4323   0.4829   0.4615   1.0000
   generosity |  -0.0178  -0.1993  -0.1149  -0.1618   0.1694   1.0000
 perception~n |  -0.4211  -0.3423  -0.2032  -0.3644  -0.4014  -0.1640   1.0000
 
+From the table above , it is notable that loggedgdppercapita , socialsupport , and  healthylifeexpectancy show strong positive correlation with the ladder score.Even 
+freedomtomakelifechoices shows positive correlation with the ladder score, it is not that strong when compare with the loggedgdppercapita , socialsupport , and  healthylifeexpectancy.
+While generosity and perceptionsofcorruption show negative correlation , generosity seems to be neglectable and perceptionsofcorruption show a mild negative correlation to the ladder
+score. Therefore, it is foreseeable that loggedgdppercapita , socialsupport , and healthylifeexpectancy would be both economical and statistically significant while generosity 
+and perceptionsofcorruption might not.
 
+Then we will perform OLS regression and robust OLS regression.
 
+OLS regression
 
+$ reg ladderscore loggedgdppercapita socialsupport healthylifeexpectancy freedomtomakelifechoices generosity perceptionsofcorruption
 
+#save it as OLS
+
+$ eststo OLS
+
+Robust OLS regression
+
+$ reg ladderscore loggedgdppercapita socialsupport healthylifeexpectancy freedomtomakelifechoices generosity perceptionsofcorruption,r
+
+#save it as robust_OLS
+
+$ eststo robust_OLS
+
+Then we can combine it and compare
+
+$ esttab OLS robust_OLS
+
+--------------------------------------------
+                    (OLS)       (robust_OLS)   
+                ladderscore      ladderscore   
+--------------------------------------------
+loggedgdpp~a        0.280**         0.280** 
+                   (3.22)          (3.09)   
+
+socialsupp~t        2.476***        2.476** 
+                   (3.71)          (3.34)   
+
+healthylif~y       0.0303*         0.0303*  
+                   (2.27)          (1.99)   
+
+freedomtom~s        2.010***        2.010***
+                   (4.06)          (4.20)   
+
+generosity          0.364           0.364   
+                   (1.13)          (1.02)   
+
+perception~n       -0.605*         -0.605   
+                  (-2.08)         (-1.73)   
+
+_cons              -2.237***       -2.237** 
+                  (-3.55)         (-3.09)   
+--------------------------------------------
+N                     149             149   
+--------------------------------------------
+t statistics in parentheses
+* p<0.05, ** p<0.01, *** p<0.001
+
+ladderscore loggedgdppercapita socialsupport healthylifeexpectancy freedomtomakelifechoices generosity perceptionsofcorruption
+OLS 
+
+From the table above, it is discovered that freedomtomakelifechoices and socialsupport are economically significant and they are statistically significant even in the 1% significance
+level . loggedgdppercapita is significant up to 1% while healthylifeexpectancy and perceptionsofcorruption can only be significant up to 5% significance level. It is notable that 
+generosity is insignificant no matter which significance level it is.
 
             
             
