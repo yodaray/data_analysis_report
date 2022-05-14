@@ -1,0 +1,421 @@
+House Price Analysis
+
+Dataset in use : train.csv (the dataset of Housing Prices Competition for Kaggle Learn Users)
+
+Author of the Dataset : unknown
+
+Link to the dataset : https://www.kaggle.com/c/home-data-for-ml-course/data?select=train.csv
+
+Background of the analysis : 
+
+Objectives : 
+            1. To find out which variable(s) affect the house price the most
+            2. To suggest way to improve the house (e.g. Structure , size , etc.)
+            
+            
+Dependent Variable:
+                    saleprice -> Sale price of the house
+
+$ summarize saleprice
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+   saleprice |      1,460    180921.2     79442.5      34900     755000
+   
+   Independent Variables : 
+                        1. Overall Quality  (from 1 to 10, lowest to highest)
+                           a.  Rates the overall  material and finish of the house
+                           
+$ summarize overallqual
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+ overallqual |      1,460    6.099315    1.382997          1         10
+
+
+                      2 . OverallCond  (from 1 to 10, lowest to highest)
+                          a. Rates the overall condition of the house
+$ summarize overallcond
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+ overallcond |      1,460    5.575342    1.112799          1          9
+
+
+                     3. Overallsize (1st floor +2nd floor)
+                            a. Overall size of the house
+                            
+$ gen overallsize = (stflrsf + ndflrsf)
+$ summarize stflrst
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+     stflrsf |      1,460    1162.627    386.5877        334       4692
+
+$ summarize ndflrsf
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+     ndflrsf |      1,460    346.9925    436.5284          0       2065
+
+
+$ summarize oversize
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+ overallsize |      1,460    1509.619    521.1635        334       5642
+ 
+ We will first find the correlation bewteen the dependent and the independent variables
+ 
+ 
+ The result will be like the following
+ 
+
+             | saleprice overallqual overallcond overallsize
+-------------+------------------------------------------------
+   saleprice |   1.0000
+ overallqual |   0.7910      1.0000
+ overallcond |  -0.0779     -0.0919     1.0000
+ overallsize |   0.7169      0.6008    -0.0827      1.0000
+
+From the table above, it is suggested that overallquality and the overallsize has a high degress positive relationship between the dependent and the independent variables while the correlation
+bewteen overallcond and saleprice is very low which shows a neglectable correlation
+
+ 
+Then we will run a regression saleprice on oversize , overallcond , overallqual by a robust model
+
+$ reg saleprice overallcond overallsize overallqual,r
+
+The result will be like this
+
+Linear regression                               Number of obs     =      1,460
+                                                F(3, 1456)        =     452.26
+                                                Prob > F          =     0.0000
+                                                R-squared         =     0.7171
+                                                Root MSE          =      42299
+
+------------------------------------------------------------------------------
+             |               Robust
+   saleprice |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+ overallcond |    379.108   957.5463     0.40   0.692     -1499.21    2257.426
+ overallsize |   57.68275   7.081929     8.15   0.000     43.79088    71.57462
+ overallqual |   32405.18   1293.966    25.04   0.000     29866.95    34943.42
+       _cons |  -105920.9   10407.85   -10.18   0.000    -126336.9   -85504.89
+------------------------------------------------------------------------------
+
+The adjusted R-squared will be like this
+
+$ display _result(8)
+
+.71650214
+
+
+Findings:
+
+From the table above , it is suggested that the overallquality is the most economically significant , its cofficient is 32405.18, indictate that every increase
+in quality will lead to a rise in saleprice by 32405.18 dollars, which greatly exceed other independent variables
+like the overall condition and the overall size. While the other variables are realtively economically insignificant. In terms of statistical significance, 
+we can set hypothesis
+
+H0: coefficicent of overall condition=0 || coefficicent of overall size=0 || coefficicent of overall quality=0    vs H1 : not H0
+
+
+
+The corresponding critical value (5% significant level)  :
+
+$ display invttail(1456,0.05/2)
+1.9615946
+
+
+By computing their t-statistics, the result be as follows
+
+
+Independent Variable |   t-statistics   |   Difference with critical value 
+---------------------+------------------+--------------------------------------
+overallcond          |       0.40       |        smaller than critical value
+overallsize          |       8.15       |        larger than critical value
+overallqual          |       25.04      |        larger than critical value
+-------------------------------------------------------------------------------
+
+
+From the table above, it is suggested that both overall size and overall quality are statistically significant but only overall quality is both statistically and economically
+significant.
+
+
+The F-statistics of this model is 1230.231648 and the corresponding critical value is 
+$ display invFtail(3,1456,0.05/2)
+3.125084
+
+When we post a hypothesis that
+
+H0 : all coefficient of the independent variables=0  vs H1 : not H0
+
+Since the F-statistics is greatly exceeding the critical value so all the variables are jointly significant.
+
+Even though the model seems nice ,having high R-squared with over 71% and jointly significance of the independent variables, there is still way to improve as there are other variables
+in explaining the overall quality like the Kitchen quality , heating quality, etc.
+
+In the view of this , we will use these variables as instrument for the independent variable overal quality.
+
+Before using Kitchen quality and heating quality , we need to test the instrument relevance. Therefore, we need to run regression overall quality on kitchen quality and heating
+quality.
+
+
+1. Kitchen quality 
+
+From Poor (po) , Fair (Fa) , Average/Typical (TA) , Good (Gd) , Excellent (Ex)
+
+
+$ summarize kitchen_qual_num
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+kitchen_qu~m |      1,460    2.511644    .6637599          1          4
+
+
+
+2. Heating quality 
+
+From Poor (po) , Fair (Fa) , Average/Typical (TA) , Good (Gd) , Excellent (Ex)
+
+$ summarize heatingqc_num
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+heatingqc_~m |      1,460    3.145205    .9595008          0          4
+
+
+
+
+$ reg overallqual kitchen_qual_num heatingqc_num overallsize overallcond,r
+
+Linear regression                               Number of obs     =      1,460
+                                                F(4, 1455)        =     484.68
+                                                Prob > F          =     0.0000
+                                                R-squared         =     0.5887
+                                                Root MSE          =     .88815
+
+----------------------------------------------------------------------------------
+                 |               Robust
+     overallqual |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-----------------+----------------------------------------------------------------
+kitchen_qual_num |   .9262587   .0516241    17.94   0.000     .8249932    1.027524
+   heatingqc_num |   .1958679   .0307518     6.37   0.000     .1355453    .2561905
+     overallsize |   .0009847   .0000547    18.00   0.000     .0008773     .001092
+     overallcond |  -.0589683   .0256824    -2.30   0.022    -.1093468   -.0085897
+           _cons |   1.999137   .2023334     9.88   0.000     1.602241    2.396033
+----------------------------------------------------------------------------------
+
+Then we need to test whether these instrument are weak or not.
+
+$ test kitchen_qual_num heatingqc_num
+
+ ( 1)  kitchen_qual_num = 0
+ ( 2)  heatingqc_num = 0
+
+       F(  2,  1455) =  328.56
+            Prob > F =    0.0000
+
+The corresponding critical value is
+
+$  display invFtail(2,1455,0.05/2)
+3.6982477
+
+Since the F-statistics is far larger than its critical value , it is suggested that the Instrument this time (kitchen_qual_num and heatingqc_num) are strong instrument to 
+estimate overall quality.
+
+
+After obtaining the result above , we need to set hypothesis below
+
+We assume that kitchen_qual_num and heatingqc_num are uncorrelated with the error term in the original model.
+
+H0 : Coefficient of kitchen_qual_num = 0  vs H1 : not H0
+
+The t-statistics of kitchen_qual_num = 17.94 and the corresponding critical value = 1.9615946. Since the t-statistics is larger than its critical value so H0 is rejected in favour 
+of H1 . Therefore , it is suggested that Cov(kitchen_qual_num , overallqual) =/= 0 suggesting that kitchen_qual_num is relevant for explaining variation in overall_qual.
+
+
+
+H0 : Coefficient of heatingqc_num = 0  vs H1 : not H0
+
+
+The t-statistics of heatingqc_num = 6.37 and the corresponding critical value = 1.9615946. Since the t-statistics is larger than its critical value so H0 is rejected in favour 
+of H1 . Therefore , it is suggested that Cov(heatingqc_num , overallqual) =/= 0 suggesting that heatingqc_num is relevant for explaining variation in overall_qual.
+
+
+Then we need to get the residual from the reduced form (instrument estimate for overall_qual).
+
+$ predict vhat,res
+
+1. vhat (residual of the reduced formula)
+
+$ summarize vhat
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+        vhat |      1,460   -1.05e-10    .8869297  -3.344169   2.432751
+
+
+Then we run a regression saleprice on the all independent variables and the residual above to test if the overall quality is exogenous or not.
+
+$ reg saleprice overallcond overallsize overallqual vhat,r
+
+
+Linear regression                               Number of obs     =      1,460
+                                                F(4, 1455)        =     398.09
+                                                Prob > F          =     0.0000
+                                                R-squared         =     0.7435
+                                                Root MSE          =      40289
+
+------------------------------------------------------------------------------
+             |               Robust
+   saleprice |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+ overallcond |   1212.902   889.0421     1.36   0.173    -531.0391    2956.843
+ overallsize |   32.67948   7.234771     4.52   0.000     18.48778    46.87117
+ overallqual |   48181.32   1794.478    26.85   0.000     44661.28    51701.36
+        vhat |  -24445.77   1944.935   -12.57   0.000    -28260.94   -20630.59
+       _cons |  -169047.7   11506.95   -14.69   0.000    -191619.7   -146475.8
+------------------------------------------------------------------------------
+
+
+The t-statistics of overallqual is 26.85.
+
+The corresponding critical value=
+$ display invttail(1455,0.05/2)
+1.9615957
+
+We can set the hypothesis like the following:
+
+H0 : coefficient of the error term = 0  vs H1 : not H0
+
+As the t-statistics of overallqual is larger than its critical value , so we reject H0 in favour of H1. Therefore, it is suggested that the variable [ overall_qual ]
+is endogenous.
+
+Then we can run the 2 stage least suqared for doing our estimation
+
+$  ivregress 2sls saleprice overallcond overallsize (overallqual= kitchen_qual_num heatingqc_num),r
+
+Instrumental variables (2SLS) regression          Number of obs   =      1,460
+                                                  Wald chi2(3)    =    1130.43
+                                                  Prob > chi2     =     0.0000
+                                                  R-squared       =     0.6690
+                                                  Root MSE        =      45689
+
+------------------------------------------------------------------------------
+             |               Robust
+   saleprice |      Coef.   Std. Err.      z    P>|z|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+ overallqual |   48181.32   1937.852    24.86   0.000      44383.2    51979.44
+ overallcond |   1212.902   1169.898     1.04   0.300    -1080.056     3505.86
+ overallsize |   32.67948    6.99447     4.67   0.000     18.97057    46.38839
+       _cons |  -169047.7   13426.84   -12.59   0.000    -195363.9   -142731.6
+------------------------------------------------------------------------------
+Instrumented:  overallqual
+Instruments:   overallcond overallsize kitchen_qual_num heatingqc_num
+-------------------------------------------------------------------------------
+. 
+From the table above , we can see that every increase in the overallqual will increase the saleprice by 48181.32 dollars. While every overcond will increase the saleprice by 1212.902.
+Every overallsize will increase the saleprice by 32.67948 dollars.
+
+In order to judge if the instrument are exogenous, we need to first get the residual from the 2sls estimation
+
+$ predict res,res
+
+Then we will run regression res on instruments and all independent variables expect the independent variable overall quality
+
+$ reg res overallcond overallsize heatingqc_num kitchen_qual_num ,r
+
+Linear regression                               Number of obs     =      1,460
+                                                F(4, 1455)        =       0.31
+                                                Prob > F          =     0.8746
+                                                R-squared         =     0.0007
+                                                Root MSE          =      45751
+
+----------------------------------------------------------------------------------
+                 |               Robust
+             res |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-----------------+----------------------------------------------------------------
+     overallcond |   1.305582   1158.825     0.00   0.999    -2271.841    2274.452
+     overallsize |  -.1325542   6.156214    -0.02   0.983    -12.20856    11.94345
+   heatingqc_num |  -1428.416   1358.176    -1.05   0.293    -4092.608    1235.776
+kitchen_qual_num |   1494.859   2320.751     0.64   0.520    -3057.515    6047.234
+           _cons |   930.9349   11726.74     0.08   0.937    -22072.19    23934.06
+----------------------------------------------------------------------------------
+
+
+The test statistics : 
+
+$ display e(r2)*e(N)
+1.0391545
+
+The p-value :
+$ display chi2tail(1,e(r2)*e(N))
+.30801819
+
+As the p-value is smaller than the test statistics, therefore the null hypothesis that all the instruments (heatingqc_num and kitchen_qual_num) 
+are correlated with the error term in structural model is rejected in favour of the hypothesis that all the instruments (heatingqc_num and kitchen_qual_num) 
+are uncorrelated with the error term in structural model.
+
+Thereofre, it is suggested that the instruments are uncorrelated with the structual equation (the OLS model) which fulfill all the preliminary assumptions
+
+
+1. Instrument Exogenity
+
+2. Instrument relevance
+
+Since these 2 asspumtions are fulfilled , it suggests that our estimation is consistent.
+
+Overall Comparison table :
+
+--------------------------------------------
+                      (1)             (2)   
+             OLS saleprice    IV saleprice   
+--------------------------------------------
+overallcond         379.1          1212.9   
+                  (957.5)        (1169.9)   
+
+overallsize         57.68***        32.68***
+                  (7.082)         (6.994)   
+
+overallqual       32405.2***      48181.3***
+                 (1294.0)        (1937.9)   
+
+_cons           -105920.9***    -169047.7***
+                (10407.8)       (13426.8)   
+--------------------------------------------
+N                    1460            1460   
+R-sq                0.717           0.669   
+adj. R-sq           0.717           0.668   
+--------------------------------------------
+Standard errors in parentheses
+* p<0.05, ** p<0.01, *** p<0.001
+
+
+
+Advantage of the analysis this time :
+
+1. More consistent 
+  -Because of the use of exogenous instrument
+  
+  
+Disadvantage of the analysis this time :
+
+1. The variation in cofficients are large. 
+  - As we did not take log on both saleprice and overallsize which will make the result look awakward .
+    For instance , the cofficient in 2sls of overallqual is 48181 while the coefficient of the overallsize is just 32.
+
+
+Conclusion : 
+
+Overall speaking, the overall quality is the most important to the saleprice than other variables like overall size adn overall condition which suggests that 
+better overall qualtiy , higher the saleprice of the house . However, it is suprised to noted that the overall size has the lowest effect on the price 
+when compare to the other 2 variables. In order to increase the saleprice , it is at best to increase the quality of the house/apartment like the kitchen or 
+the heating to improve the overrall quality. 
+
+
+
+
+
+   

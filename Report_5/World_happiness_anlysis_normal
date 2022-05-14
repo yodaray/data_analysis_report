@@ -1,0 +1,302 @@
+World_Happiness_Anlysis_normal
+
+Dataset in use : world-happiness-report-2021.csv
+
+Author of the Dataset : Sustainable Development Solutions Network, powered by data from the Gallup World Poll and Lloyd’s Register Foundation, who provided access to the World Risk Poll. The 2021 Report includes data from the ICL-YouGov Behaviour Tracker as part of the COVID Data Hub from the Institute of Global Health Innovation.
+
+Extracted from Kaggle
+
+Link to the dataset : https://www.kaggle.com/ajaypalsinghlo/world-happiness-report-2021?select=world-happiness-report.csv
+
+Background of the analysis : 
+
+
+Objectives : 
+            1. To find out which variable(s) affect the happiness score the most
+            2. To suggest way to attain happiness (LOL)
+            
+Special Acknowledgement: 
+            1. Outliers will be removed if outlier(s) is(are) spotted.
+            
+Dependent Variable:
+
+                  ladderscore  --> score in terms of happiness
+                  
+$ summ ladderscore
+
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+ ladderscore |        149    5.532839    1.073924      2.523      7.842
+
+
+
+Independent Variables:
+
+                    1. loggedgdppercapita --> The logged GDP per capita
+                  
+$ summ loggedgdppercapita
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+loggedgdpp~a |        149    9.432208    1.158601      6.635     11.647
+
+
+            
+                    2. socialsupport --> social support
+                    
+$ summ socialsupport
+
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+socialsupp~t |        149     .814745     .114889       .463       .983
+
+
+
+                    3. healthylifeexpectancy --> healthy life expectancy
+                    
+$ summ healthylifeexpectancy
+
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+healthylif~y |        149     64.9928    6.762043     48.478     76.953
+
+
+                    4. freedomtomakelifechoices --> freedom to make life choices
+                    
+$ summ freedomtomakelifechoices
+
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+freedomtom~s |        149    .7915973    .1133318       .382        .97
+
+
+
+                    5. generosity
+                    
+$summ generosity
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+  generosity |        149   -.0151342    .1506567      -.288       .542
+
+
+
+                    6. perceptionsofcorruption --> perceptions of corruption
+                    
+                    
+$ summ perceptionsofcorruption
+
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+perception~n |        149    .7274497    .1792263       .082       .939
+
+            
+We will first find the correlation bewteen the dependent variable and the independent variables
+
+$ corr ladderscore loggedgdppercapita socialsupport healthylifeexpectancy freedomtomakelifechoices generosity perceptionsofcorruption
+
+             | ladder~e logged~a social~t health~y freedo~s genero~y percep~n
+-------------+---------------------------------------------------------------
+ ladderscore |   1.0000
+loggedgdpp~a |   0.7898   1.0000
+socialsupp~t |   0.7569   0.7853   1.0000
+healthylif~y |   0.7681   0.8595   0.7233   1.0000
+freedomtom~s |   0.6078   0.4323   0.4829   0.4615   1.0000
+  generosity |  -0.0178  -0.1993  -0.1149  -0.1618   0.1694   1.0000
+perception~n |  -0.4211  -0.3423  -0.2032  -0.3644  -0.4014  -0.1640   1.0000
+
+From the table above , it is notable that loggedgdppercapita , socialsupport , and  healthylifeexpectancy show strong positive correlation with the ladder score.Even 
+freedomtomakelifechoices shows positive correlation with the ladder score, it is not that strong when compare with the loggedgdppercapita , socialsupport , and  healthylifeexpectancy.
+While generosity and perceptionsofcorruption show negative correlation , generosity seems to be neglectable and perceptionsofcorruption show a mild negative correlation to the ladder
+score. Therefore, it is foreseeable that loggedgdppercapita , socialsupport , and healthylifeexpectancy would be both economical and statistically significant while generosity 
+and perceptionsofcorruption might not.
+
+Then we will perform OLS regression and robust OLS regression.
+
+OLS regression
+
+$ reg ladderscore loggedgdppercapita socialsupport healthylifeexpectancy freedomtomakelifechoices generosity perceptionsofcorruption
+
+#save it as OLS
+
+$ eststo OLS
+
+Robust OLS regression
+
+$ reg ladderscore loggedgdppercapita socialsupport healthylifeexpectancy freedomtomakelifechoices generosity perceptionsofcorruption,r
+
+#save it as robust_OLS
+
+$ eststo robust_OLS
+
+Then we can combine it and compare
+
+$ esttab OLS robust_OLS
+
+--------------------------------------------
+                    (OLS)       (robust_OLS)   
+                ladderscore      ladderscore   
+--------------------------------------------
+loggedgdpp~a        0.280**         0.280** 
+                   (3.22)          (3.09)   
+
+socialsupp~t        2.476***        2.476** 
+                   (3.71)          (3.34)   
+
+healthylif~y       0.0303*         0.0303*  
+                   (2.27)          (1.99)   
+
+freedomtom~s        2.010***        2.010***
+                   (4.06)          (4.20)   
+
+generosity          0.364           0.364   
+                   (1.13)          (1.02)   
+
+perception~n       -0.605*         -0.605   
+                  (-2.08)         (-1.73)   
+
+_cons              -2.237***       -2.237** 
+                  (-3.55)         (-3.09)   
+--------------------------------------------
+N                     149             149   
+--------------------------------------------
+t statistics in parentheses
+* p<0.05, ** p<0.01, *** p<0.001
+
+
+OLS 
+
+The R-squared and the adjusted R-squared of OLS are 0.7558 and 0.7455 respectively
+
+From the table above, it is discovered that freedomtomakelifechoices and socialsupport are economically significant and they are statistically significant even in the 0.1% significance
+level . loggedgdppercapita is significant up to 1% while healthylifeexpectancy and perceptionsofcorruption can only be significant up to 5% significance level. It is notable that 
+generosity is insignificant no matter which significance level it is.
+
+Robust OLS
+
+The R-squared and the adjusted R-squared of OLS are 0.7558 and 0.74553079 respectively
+
+From the table above, it is discovered that freedomtomakelifechoices is the only variable that is statistically significant up to 0.1% significance level. It is also notable that freedomtomakelifechoices
+and socialsupport are economically significant. loggedgdppercapita and socialsupport are significant up to 1% while healthylifeexpectancy and perceptionsofcorruption can only be significant up to 5% significance level. It is notable that 
+generosity is insignificant no matter which significance level it is.
+
+
+In the view of the table above , we will amend the model in the following ways:
+
+1. Removal of variables that are not statistically significant at at least 5% significance level which is generosity. Since perception of corruption is not statistically significant
+so the variable perception would also be removed based on such consideration.
+
+2. Removal of both vairables mentioned in 1. in both rebust and noraml OLS model.
+
+The result will be listed as follows:
+
+--------------------------------------------------------------------------------------------
+> ------------------------------------------------
+                      (1)             (2)             (3)             (4)             (5)   
+>           (6)             (7)             (8)   
+              ladderscore     ladderscore     ladderscore     ladderscore     ladderscore   
+>   ladderscore     ladderscore     ladderscore   
+--------------------------------------------------------------------------------------------
+> ------------------------------------------------
+loggedgdpp~a        0.280**         0.280**         0.264**         0.264**         0.309***
+>         0.309***        0.292***        0.292** 
+                   (3.22)          (3.09)          (3.08)          (2.82)          (3.57)   
+>        (3.55)          (3.38)          (3.19)   
+
+socialsupp~t        2.476***        2.476**         2.507***        2.507***        2.168** 
+>         2.168**         2.166**         2.166** 
+                   (3.71)          (3.34)          (3.75)          (3.38)          (3.29)   
+>        (2.84)          (3.27)          (2.88)   
+
+healthylif~y       0.0303*         0.0303*         0.0294*         0.0294          0.0339*  
+>        0.0339*         0.0331*         0.0331*  
+                   (2.27)          (1.99)          (2.20)          (1.92)          (2.53)   
+>        (2.22)          (2.46)          (2.14)   
+
+freedomtom~s        2.010***        2.010***        2.133***        2.133***        2.287***
+>         2.287***        2.498***        2.498***
+                   (4.06)          (4.20)          (4.41)          (4.69)          (4.74)   
+>        (4.86)          (5.38)          (5.72)   
+
+generosity          0.364           0.364                                           0.492   
+>         0.492                                   
+                   (1.13)          (1.02)                                          (1.54)   
+>        (1.40)                                   
+
+perception~n       -0.605*         -0.605          -0.668*         -0.668*                  
+>                                                 
+                  (-2.08)         (-1.73)         (-2.34)         (-1.98)                   
+>                                                 
+
+_cons              -2.237***       -2.237**        -2.110***       -2.110**        -3.156***
+>        -3.156***       -3.112***       -3.112***
+                  (-3.55)         (-3.09)         (-3.40)         (-3.02)         (-6.92)   
+>       (-6.29)         (-6.81)         (-6.12)   
+--------------------------------------------------------------------------------------------
+> ------------------------------------------------
+N                     149             149             149             149             149   
+>           149             149             149   
+--------------------------------------------------------------------------------------------
+> ------------------------------------------------
+t statistics in parentheses
+* p<0.05, ** p<0.01, *** p<0.001
+
+. 
+The model names follow the list below:
+1 --> OLS                                            
+2 --> Robust OLS
+3 --> OLS no generosity
+4 --> Robust OLS no generosity
+5 --> OLS no perception of corruption
+6 --> Robust OLS no perception of corruption
+7 --> OLS without both
+8 --> Robust OLS without both
+
+
+By the table above, it is discovered that the removal of either variable or both variables did not alter the result to a very high extend which may suggest that the 2 variables 
+are neglectable . However, in the view of preventing selection bias , it is legitimate to keep the two variables. Therefore, it is legitimate to use the robust OLS model for analyzing 
+the criteria of happiness.
+
+The robust model is listed as follows:
+
+$ reg ladderscore loggedgdppercapita socialsupport healthylifeexpectancy freedomtomakelifechoices generosity perceptionsofcorruption,r
+
+Linear regression                               Number of obs     =        149
+                                                F(6, 142)         =      80.87
+                                                Prob > F          =     0.0000
+                                                R-squared         =     0.7558
+                                                Root MSE          =     .54174
+
+------------------------------------------------------------------------------------------
+                         |               Robust
+             ladderscore |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------------------+----------------------------------------------------------------
+      loggedgdppercapita |   .2795329   .0903229     3.09   0.002     .1009817    .4580841
+           socialsupport |   2.476206   .7423153     3.34   0.001     1.008789    3.943623
+   healthylifeexpectancy |   .0303138   .0152047     1.99   0.048     .0002569    .0603707
+freedomtomakelifechoices |   2.010465   .4787216     4.20   0.000     1.064122    2.956807
+              generosity |   .3643819   .3558747     1.02   0.308    -.3391152    1.067879
+ perceptionsofcorruption |  -.6050919   .3489069    -1.73   0.085    -1.294815    .0846311
+                   _cons |  -2.237219   .7245922    -3.09   0.002    -3.669601   -.8048369
+------------------------------------------------------------------------------------------
+
+The F-statistic of the model is 87.8981163 far larger than its critical values of 2.1629984 [ display invFtail(6,142,0.05) ] which suggests that the variables are jointly significant.
+
+
+Conclusion:
+
+From the table aobve, we can discover that freedom to make life choices is the most important criterion to happiness while loggedgdppercapita and social support are other important criteria follow
+freedom to make life choices. Therefore, it is discovered that money, freedom and social support are crucial to happiness which suggested that a strong economy , a support governemnt 
+as well as freedom no matter it is political or economical can contribute to personal happiness .
+            
+            
+            
+            
+            
+            
+            
